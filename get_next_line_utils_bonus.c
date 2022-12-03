@@ -5,120 +5,116 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcapistr <jcapistr@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/02 13:09:15 by jcapistr          #+#    #+#             */
-/*   Updated: 2022/12/02 13:09:18 by jcapistr         ###   ########.fr       */
+/*   Created: 2022/12/03 10:57:17 by jcapistr          #+#    #+#             */
+/*   Updated: 2022/12/03 10:57:18 by jcapistr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-int	ft_strlen(const char *s)
+int	ft_strlen(const char *str)
 {
 	int	i;
 
-	if (s == NULL)
+	if (str == NULL)
 		return (0);
 	i = 0;
-	while (s[i] != '\0')
+	while (str[i] != '\0')
 		i++;
 	return (i);
 }
 
-char	*ft_strchr(const char *s, int c)
+char	*ft_strchr(const char *str, int chr)
 {
 	int	i;
 
-	if (s == NULL)
+	if (str == NULL)
 		return (NULL);
+	if (chr == '\0')
+		return ((char *)(str + ft_strlen(str)));
 	i = 0;
-	if (c == '\0')
-		return ((char *)(s + ft_strlen(s)));
-	while (s[i] != '\0')
+	while (str[i] != '\0')
 	{
-		if (s[i] == c)
-			return ((char *)(s + i));
+		if (str[i] == chr)
+			return ((char *)(str + i));
 		i++;
 	}
 	return (NULL);
 }
 
-char	*ft_strjoin(char *buff, char *rd_buff)
+char	*ft_bufjoin(char *b1, char *b2)
 {
-	char	*str;
+	char	*buf;
 	int		i;
 	int		j;
-	int		len;
 
-	if (buff == NULL)
+	if (b1 == NULL)
 	{
-		buff = (char *)malloc(sizeof(char));
-		buff[0] = '\0';
+		b1 = (char *)malloc(sizeof(char));
+		if (b1 == NULL)
+			return (NULL);
+		b1[0] = '\0';
 	}
-	len = ft_strlen(buff) + ft_strlen(rd_buff);
-	str = (char *)malloc((len + 1) * sizeof(char));
-	if (str == NULL)
+	buf = (char *)malloc((ft_strlen(b1) + ft_strlen(b2) + 1) * sizeof(char));
+	if (buf == NULL)
 		return (NULL);
 	i = -1;
-	while (buff[++i] != '\0')
-		str[i] = buff[i];
+	while (b1[++i] != '\0')
+		buf[i] = b1[i];
 	j = 0;
-	while (rd_buff[j] != '\0')
-		str[i++] = rd_buff[j++];
-	str[len] = '\0';
-	free(buff);
-	return (str);
+	while (b2[j] != '\0')
+		buf[i++] = b2[j++];
+	buf[i] = '\0';
+	free(b1);
+	return (buf);
 }
 
-char	*ft_get_line(const char *buff)
+char	*ft_read_fd(int fd, char *buf)
+{
+	char	*new_buf;
+	ssize_t	rd_bytes;
+
+	new_buf = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (new_buf == NULL)
+		return (NULL);
+	rd_bytes = 42;
+	while (ft_strchr(buf, '\n') == NULL && rd_bytes != 0)
+	{
+		rd_bytes = read(fd, new_buf, BUFFER_SIZE);
+		if (rd_bytes == -1)
+		{
+			free(buf);
+			free(new_buf);
+			return (NULL);
+		}
+		new_buf[rd_bytes] = '\0';
+		buf = ft_bufjoin(buf, new_buf);
+	}
+	free(new_buf);
+	return (buf);
+}
+
+char	*ft_get_line(const char *buf)
 {
 	char	*line;
 	int		i;
 
 	i = 0;
-	if (buff[i] == '\0')
+	if (buf[i] == '\0')
 		return (NULL);
-	while (buff[i] != '\0' && buff[i] != '\n')
+	while (buf[i] != '\0' && buf[i] != '\n')
 		i++;
 	line = (char *)malloc((i + 2) * sizeof(char));
 	if (line == NULL)
 		return (NULL);
 	i = 0;
-	while (buff[i] != '\0' && buff[i] != '\n')
+	while (buf[i] != '\0' && buf[i] != '\n')
 	{
-		line[i] = buff[i];
+		line[i] = buf[i];
 		i++;
 	}
-	if (buff[i] == '\n')
-	{
-		line[i] = '\n';
-		i++;
-	}
+	if (buf[i] == '\n')
+		line[i++] = '\n';
 	line[i] = '\0';
 	return (line);
-}
-
-char	*ft_move_buff(char *buff)
-{
-	char	*new_buff;
-	int		i;
-	int		j;
-
-	i = 0;
-	while (buff[i] != '\0' && buff[i] != '\n')
-		i++;
-	if (buff[i] == '\0')
-	{
-		free(buff);
-		return (NULL);
-	}
-	new_buff = (char *)malloc((ft_strlen(buff) - i + 1) * sizeof(char));
-	if (new_buff == NULL)
-		return (NULL);
-	i++;
-	j = 0;
-	while (buff[i] != '\0')
-		new_buff[j++] = buff[i++];
-	new_buff[j] = '\0';
-	free(buff);
-	return (new_buff);
 }

@@ -5,31 +5,33 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcapistr <jcapistr@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/02 12:46:40 by jcapistr          #+#    #+#             */
-/*   Updated: 2022/12/02 13:06:10 by jcapistr         ###   ########.fr       */
+/*   Created: 2022/12/03 10:57:08 by jcapistr          #+#    #+#             */
+/*   Updated: 2022/12/03 10:57:09 by jcapistr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 42
+# endif
+
 # include <stdlib.h>
 # include <unistd.h>
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 10000
-# endif //BUFFER_SIZE
+int		ft_strlen(const char *str);
 
-int		ft_strlen(const char *s);
+char	*ft_strchr(const char *str, int chr);
 
-char	*ft_strchr(const char *s, int c);
+char	*ft_bufjoin(char *b1, char *b2);
 
-char	*ft_strjoin(char *buff, char *rd_buff);
+char	*ft_read_fd(int fd, char *buf);
 
-char	*ft_get_line(const char *buff);
+char	*ft_get_line(const char *buf);
 
-char	*ft_move_buff(char *buff);
+char	*ft_move_buf(char *buf);
 
 char	*get_next_line(int fd);
 
-#endif //GET_NEXT_LINE_H
+#endif
